@@ -5,6 +5,19 @@ module StripeMock
       def validate_create_plan_params(params)
         params[:id] = params[:id].to_s
 
+        # Retrofit for old version of the API.
+        # The old versions only supported automatic
+        # creation of products for subscriptions, so
+        # we can hard-code the 'service' type.
+        if !params.key?(:product)
+          product = {
+            id: 'stripe_mock_default_product_id',
+            name: params[:name],
+            type: 'service'
+          }
+          params[:product] = product
+        end
+
         @base_strategy.create_plan_params.keys.each do |name|
           message =
             if name == :amount
