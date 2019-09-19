@@ -358,7 +358,8 @@ module StripeMock
         quantity: 1,
         tax_percent: nil,
         discount: nil,
-        metadata: {}
+        metadata: {},
+        pending_setup_intent: nil
       }, params)
     end
 
@@ -549,7 +550,7 @@ module StripeMock
         livemode: false,
         metadata: {},
         product: 'prod_1',
-	name: "The Basic Plan",	
+	name: "The Basic Plan",
         statement_descriptor: nil,
         trial_period_days: nil
       }.merge(params)
