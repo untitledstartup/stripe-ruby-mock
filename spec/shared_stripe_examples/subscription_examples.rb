@@ -140,7 +140,7 @@ shared_examples 'Customer Subscriptions' do
       expect(customer.subscriptions.data).to be_a(Array)
       expect(customer.subscriptions.data.count).to eq(1)
       expect(customer.subscriptions.data.first.discount).not_to be_nil
-      expect(customer.subscriptions.data.first.discount).to be_a(Stripe::StripeObject)
+      expect(customer.subscriptions.data.first.discount).to be_a(Stripe::Discount)
       expect(customer.subscriptions.data.first.discount.coupon.id).to eq(coupon.id)
     end
 
@@ -518,6 +518,53 @@ shared_examples 'Customer Subscriptions' do
       expect(sub.billing).to eq 'send_invoice'
       expect(sub.days_until_due).to eq 30
     end
+
+    let(:subscription_header) {{
+      :idempotency_key => 'a_idempotency_key'
+    }}
+
+    it "adds a new subscription to customer with identical idempotency key" do
+      plan = stripe_helper.create_plan(id: 'silver', product: { name: 'Silver Plan' },
+                                       amount: 4999, currency: 'usd')
+      customer = Stripe::Customer.create(source: gen_card_tk)
+
+      expect(customer.subscriptions.data).to be_empty
+      expect(customer.subscriptions.count).to eq(0)
+
+      sub1 = Stripe::Subscription.create({ items: [{ plan: 'silver' }], customer: customer.id }, subscription_header)
+      sub2 = Stripe::Subscription.create({ items: [{ plan: 'silver' }], customer: customer.id }, subscription_header)
+      expect(sub1).to eq(sub2)
+    end
+
+    it "adds a new subscription to customer with different idempotency key", :live => true do
+      plan = stripe_helper.create_plan(id: 'silver', product: { name: 'Silver Plan' },
+                                       amount: 4999, currency: 'usd')
+      customer = Stripe::Customer.create(source: gen_card_tk)
+
+      expect(customer.subscriptions.data).to be_empty
+      expect(customer.subscriptions.count).to eq(0)
+
+      another_subscription_header = {
+        :idempotency_key => 'another_idempotency_key'
+      }
+
+      sub1 = Stripe::Subscription.create({ items: [{ plan: 'silver' }], customer: customer.id }, subscription_header)
+      sub2 = Stripe::Subscription.create({ items: [{ plan: 'silver' }], customer: customer.id }, another_subscription_header)
+      expect(sub1).not_to eq(sub2)
+    end
+
+    it "accepts a hash of items" do
+      silver = stripe_helper.create_plan(id: 'silver')
+      customer = Stripe::Customer.create(id: 'test_customer_sub', source: gen_card_tk)
+
+      sub = Stripe::Subscription.create({ items: { '0' => { plan: 'silver' } }, customer: customer.id })
+      sub.delete(at_period_end: true)
+
+      expect(sub.cancel_at_period_end).to be_truthy
+      expect(sub.save).to be_truthy
+      expect(sub.cancel_at_period_end).to be_falsey
+    end
+
   end
 
   context "updating a subscription" do
@@ -638,7 +685,7 @@ shared_examples 'Customer Subscriptions' do
       subscription.save
 
       expect(subscription.discount).not_to be_nil
-      expect(subscription.discount).to be_an_instance_of(Stripe::StripeObject)
+      expect(subscription.discount).to be_a(Stripe::Discount)
       expect(subscription.discount.coupon.id).to eq(coupon.id)
     end
 
@@ -935,6 +982,52 @@ shared_examples 'Customer Subscriptions' do
       expect(customer.subscriptions.data.first.ended_at).to be_nil
       expect(customer.subscriptions.data.first.canceled_at).to be_nil
     end
+  end
+
+  it "supports 'cancelling' by updating cancel_at_period_end" do
+    truth = stripe_helper.create_plan(id: 'the_truth')
+    customer = Stripe::Customer.create(id: 'test_customer_sub', source: gen_card_tk, plan: "the_truth")
+
+    sub = Stripe::Subscription.retrieve(customer.subscriptions.data.first.id)
+    result = Stripe::Subscription.update(sub.id, cancel_at_period_end: true)
+
+    expect(result.status).to eq('active')
+    expect(result.cancel_at_period_end).to eq(true)
+    expect(result.id).to eq(sub.id)
+
+    customer = Stripe::Customer.retrieve('test_customer_sub')
+    expect(customer.subscriptions.data).to_not be_empty
+    expect(customer.subscriptions.count).to eq(1)
+    expect(customer.subscriptions.data.length).to eq(1)
+
+    expect(customer.subscriptions.data.first.status).to eq('active')
+    expect(customer.subscriptions.data.first.cancel_at_period_end).to eq(true)
+    expect(customer.subscriptions.data.first.ended_at).to be_nil
+    expect(customer.subscriptions.data.first.canceled_at).to_not be_nil
+  end
+
+  it "resumes a subscription cancelled by updating cancel_at_period_end" do
+    truth = stripe_helper.create_plan(id: 'the_truth')
+    customer = Stripe::Customer.create(id: 'test_customer_sub', source: gen_card_tk, plan: "the_truth")
+
+    sub = Stripe::Subscription.retrieve(customer.subscriptions.data.first.id)
+    Stripe::Subscription.update(sub.id, cancel_at_period_end: true)
+
+    result = Stripe::Subscription.update(sub.id, cancel_at_period_end: false)
+
+    expect(result.status).to eq('active')
+    expect(result.cancel_at_period_end).to eq(false)
+    expect(result.id).to eq(sub.id)
+
+    customer = Stripe::Customer.retrieve('test_customer_sub')
+    expect(customer.subscriptions.data).to_not be_empty
+    expect(customer.subscriptions.count).to eq(1)
+    expect(customer.subscriptions.data.length).to eq(1)
+
+    expect(customer.subscriptions.data.first.status).to eq('active')
+    expect(customer.subscriptions.data.first.cancel_at_period_end).to eq(false)
+    expect(customer.subscriptions.data.first.ended_at).to be_nil
+    expect(customer.subscriptions.data.first.canceled_at).to be_nil
   end
 
   it "doesn't change status of subscription when cancelling at period end" do
