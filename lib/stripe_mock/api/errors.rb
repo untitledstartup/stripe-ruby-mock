@@ -58,6 +58,7 @@ module StripeMock
       json_hash[:decline_code] = get_decline_code(json_hash[:code])
 
       error_values.last.merge!(json_body: { error: json_hash }, http_body: { error: json_hash })
+      error_values.delete_at(2) # The new gem does not need a 3rd argument as code. The hash has the code.
 
       error_values
     end
