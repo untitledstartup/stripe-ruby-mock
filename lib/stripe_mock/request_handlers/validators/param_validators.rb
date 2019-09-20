@@ -47,7 +47,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new(message, name) if params[name].nil?
         end
 
-        if skus[ params[:id] ]
+        if @skus[ params[:id] ]
           raise Stripe::InvalidRequestError.new("SKU already exists.", :id)
         end
 

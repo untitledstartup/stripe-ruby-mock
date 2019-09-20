@@ -13,28 +13,28 @@ module StripeMock
       def new_sku(route, method_url, params, headers)
         params[:id] ||= new_id('sku')
         validate_create_sku_params(params)
-        skus[ params[:id] ] = Data.mock_sku(params)
+        @skus[ params[:id] ] = Data.mock_sku(params)
       end
 
       def update_sku(route, method_url, params, headers)
         route =~ method_url
-        assert_existence :sku, $1, skus[$1]
-        skus[$1].merge!(params)
+        assert_existence :sku, $1, @skus[$1]
+        @skus[$1].merge!(params)
       end
 
       def get_sku(route, method_url, params, headers)
         route =~ method_url
-        assert_existence :sku, $1, skus[$1]
+        assert_existence :sku, $1, @skus[$1]
       end
 
       def delete_sku(route, method_url, params, headers)
         route =~ method_url
-        assert_existence :sku, $1, skus.delete($1)
+        assert_existence :sku, $1, @skus.delete($1)
       end
 
       def list_skus(route, method_url, params, headers)
         limit = params[:limit] ? params[:limit] : 10
-        Data.mock_list_object(skus.values.first(limit), limit: limit)
+        Data.mock_list_object(@skus.values.first(limit), limit: limit)
       end
     end
   end
