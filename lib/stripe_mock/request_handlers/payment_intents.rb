@@ -114,7 +114,7 @@ module StripeMock
         require_authentication_cards = %w[3220 3155 3184 3178 3055]
 
         if payment_intent[:status] == 'requires_confirmation'
-          unless require_authentication_cards.include?(payment_methods[payment_intent[:payment_method]][:card][:last4])
+          unless require_authentication_cards.include?(@payment_methods[payment_intent[:payment_method]][:card][:last4])
             charge = create_charge(payment_intent)
 
             payment_intent[:charges][:total_count] += 1
@@ -130,8 +130,8 @@ module StripeMock
       end
 
       def status(params)
-        if params[:payment_method]
-          return 'requires_confirmation' if payment_methods[params[:payment_method]]
+        unless params[:payment_method].blank?
+          return 'requires_confirmation' if @payment_methods[params[:payment_method]]
           raise Stripe::InvalidRequestError.new("No such payment_method: #{params[:payment_method]}", '', http_status: 400)
         else
           'requires_payment_method'
