@@ -17,21 +17,21 @@ module StripeMock
 
         ensure_payment_method_required_params(params)
         params[:card][:last4] = params[:card][:number][-4..-1] if params[:card]
-        payment_methods[id] = Data.mock_payment_method(params.merge(id: id))
-        payment_methods[id]
+        @payment_methods[id] = Data.mock_payment_method(params.merge(id: id))
+        @payment_methods[id]
       end
 
       def retrive_payment_method(route, method_url, _params, _headers)
         route =~ method_url
 
-        assert_existence :payment_method, $1, payment_methods[$1]
+        assert_existence :payment_method, $1, @payment_methods[$1]
       end
 
       def list_payment_methods(_route, _method_url, params, _headers)
         params[:offset] ||= 0
         params[:limit] ||= 10
 
-        result = payment_methods.clone
+        result = @payment_methods.clone
 
         if params[:customer]
           result.delete_if { |_,v| v[:customer] != params[:customer] }
@@ -43,7 +43,7 @@ module StripeMock
       def attach_payment_method(route, method_url, params, headers)
         route =~ method_url
 
-        payment_method = assert_existence :payment_method, $1, payment_methods[$1]
+        payment_method = assert_existence :payment_method, $1, @payment_methods[$1]
 
         if params[:customer]
           customer = assert_existence :customer, params[:customer], customers[params[:customer]]
@@ -56,7 +56,7 @@ module StripeMock
       def detach_payment_method(route, method_url, params, headers)
         route =~ method_url
 
-        payment_method = assert_existence :payment_method, $1, payment_methods[$1]
+        payment_method = assert_existence :payment_method, $1, @payment_methods[$1]
         payment_method[:customer] = nil
 
         payment_method
@@ -65,13 +65,13 @@ module StripeMock
       def update_payment_method(route, method_url, params, headers)
         route =~ method_url
 
-        payment_method = assert_existence :payment_method, $1, payment_methods[$1]
+        payment_method = assert_existence :payment_method, $1, @payment_methods[$1]
 
         if payment_method[:customer].nil?
           raise Stripe::InvalidRequestError.new('You must save this PaymentMethod to a customer before you can update it.', nil, http_status: 400)
         end
 
-        payment_methods[$1] = Util.rmerge(payment_method, params.select{ |k,v| UPDATE_PARAMS.include?(k)})
+        @payment_methods[$1] = Util.rmerge(payment_method, params.select{ |k,v| UPDATE_PARAMS.include?(k)})
       end
 
       private
