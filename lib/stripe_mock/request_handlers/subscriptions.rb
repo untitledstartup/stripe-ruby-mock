@@ -137,7 +137,7 @@ module StripeMock
         add_subscription_to_customer(customer, subscription)
 
         # add invoice
-        invoice = Data.mock_invoice([Data.mock_line_item({ id: new_id('ii'), currency: subscription_plans.first[:currency], amount: subscription_plans.first[:amount], subscription: subscription[:id], plan: subscription_plans.first[:id] })], {id: new_id('in'), customer: params[:customer]})
+        invoice = Data.mock_invoice([Data.mock_line_item({ id: new_id('ii'), currency: subscription_plans.first[:currency], amount: subscription_plans.first[:amount], subscription: subscription[:id], plan: subscription_plans.first[:id] })], {id: new_id('in'), customer: params[:customer], subscription: subscription[:id]})
         subscription[:latest_invoice] = invoice[:id]
         invoices[invoice[:id]] = invoice
 
