@@ -1264,6 +1264,7 @@ module StripeMock
         :payment_method_options => {
           "card": {"request_three_d_secure":"automatic"}
         },
+        :payment_method_data => nil,
         :payment_method_types => ["card"],
         :status => "requires_payment_method",
         :usage => "off_session"
