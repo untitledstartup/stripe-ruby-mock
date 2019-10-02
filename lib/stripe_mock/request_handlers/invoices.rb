@@ -15,6 +15,8 @@ module StripeMock
 
       def new_invoice(route, method_url, params, headers)
         id = new_id('in')
+        line_item_params = {}
+        invoice_params = {}
 
         if params[:subscription]
           subscription = @subscriptions[params[:subscription]]
