@@ -21,10 +21,11 @@ module StripeMock
         if params[:subscription]
           subscription = @subscriptions[params[:subscription]]
           amount = (params[:amount] || subscription[:plan][:amount])
-          tax_amount = amount * 0.1
+          tax_percent = params[:tax_percent] || 10
+          tax_amount = amount * (tax_percent / 100.0)
 
-          line_item_params = {subscription: subscription[:id], tax_amounts: [{amount: tax_amount}], amount: amount, plan: subscription[:plan][:id]}
-          invoice_params = {subscription: subscription[:id], tax: tax_amount, amount_due: amount, customer: params[:customer]}
+          line_item_params = {subscription: subscription[:id], tax_percent: tax_percent, tax_amounts: [{amount: tax_amount}], amount: amount, plan: subscription[:plan][:id]}
+          invoice_params = {subscription: subscription[:id], tax_percent: tax_percent, tax: tax_amount, amount_due: amount, customer: params[:customer]}
         end
 
         invoice_item = Data.mock_line_item(line_item_params)
