@@ -17,7 +17,7 @@ module StripeMock
         id = new_id('in')
         line_item_params = {}
         invoice_params = {}
-        tax_percent = params[:tax_percent] || 10
+        tax_percent = params[:tax_percent] || 0
 
         if params[:subscription]
           subscription = @subscriptions[params[:subscription]]

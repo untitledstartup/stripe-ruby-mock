@@ -34,6 +34,7 @@ module StripeMock
 
       def create_customer_subscription(route, method_url, params, headers)
         route =~ method_url
+        tax_percent = params[:tax_percent] || 0
 
         subscription_plans = get_subscription_plans_from_params(params)
         customer = assert_existence :customer, $1, customers[$1]
@@ -44,7 +45,7 @@ module StripeMock
           customer[:default_source] = new_card[:id]
         end
 
-        subscription = Data.mock_subscription({ id: (params[:id] || new_id('su')) })
+        subscription = Data.mock_subscription({id: (params[:id] || new_id('su')), tax_percent: tax_percent})
         subscription = resolve_subscription_changes(subscription, subscription_plans, customer, params)
 
         # Ensure customer has card to charge if plan has no trial and is not free
@@ -87,6 +88,7 @@ module StripeMock
         customer = params[:customer]
         customer_id = customer.is_a?(Stripe::Customer) ? customer[:id] : customer.to_s
         customer = assert_existence :customer, customer_id, customers[customer_id]
+        tax_percent = params[:tax_percent] || 0
 
         if subscription_plans && customer
           subscription_plans.each do |plan|
@@ -108,7 +110,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new("Received unknown parameter: #{unknown_params.join}", unknown_params.first.to_s, http_status: 400)
         end
 
-        subscription = Data.mock_subscription({ id: (params[:id] || new_id('su')) })
+        subscription = Data.mock_subscription({ id: (params[:id] || new_id('su')), tax_percent: tax_percent })
         subscription = resolve_subscription_changes(subscription, subscription_plans, customer, params)
         if headers[:idempotency_key]
           subscription[:idempotency_key] = headers[:idempotency_key]
@@ -137,7 +139,7 @@ module StripeMock
         add_subscription_to_customer(customer, subscription)
 
         # add invoice
-        invoice = Data.mock_invoice([Data.mock_line_item({ id: new_id('ii'), currency: subscription_plans.first[:currency], amount: subscription_plans.first[:amount], subscription: subscription[:id], plan: subscription_plans.first[:id] })], {id: new_id('in'), customer: params[:customer], subscription: subscription[:id]})
+        invoice = Data.mock_invoice([Data.mock_line_item({ id: new_id('ii'), currency: subscription_plans.first[:currency], amount: subscription_plans.first[:amount], subscription: subscription[:id], tax_percent: subscription[:tax_percent], plan: subscription_plans.first[:id] })], {id: new_id('in'), customer: params[:customer], subscription: subscription[:id], tax_percent: subscription[:tax_percent]})
         subscription[:latest_invoice] = invoice[:id]
         invoices[invoice[:id]] = invoice
 
