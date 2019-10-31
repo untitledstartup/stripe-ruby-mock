@@ -183,6 +183,11 @@ module StripeMock
           customer[:default_source] = new_card[:id]
         end
 
+        # To force the subscription into past_due status. Useful for testing.
+        if params[:past_due]
+          subscription[:status] = 'past_due'
+        end
+
         subscription_plans = get_subscription_plans_from_params(params)
 
         # subscription plans are not being updated but load them for the response
