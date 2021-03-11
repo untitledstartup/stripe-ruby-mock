@@ -219,11 +219,15 @@ module StripeMock
 
         params[:current_period_start] = subscription[:current_period_start]
         params[:trial_end] = params[:trial_end] || subscription[:trial_end]
-        subscription = resolve_subscription_changes(subscription, subscription_plans, customer, params)
+        # Allow making the status incomplete, since it's not supported by #create
+        # https://github.com/stripe-ruby-mock/stripe-ruby-mock/issues/729
+        subscription = resolve_subscription_changes(subscription, subscription_plans, customer, params) unless subscription[:status] == 'incomplete'
 
         # delete the old subscription, replace with the new subscription
         customer[:subscriptions][:data].reject! { |sub| sub[:id] == subscription[:id] }
         customer[:subscriptions][:data] << subscription
+
+        subscription[:status] = params[:status] if params[:status]
 
         subscription
       end
