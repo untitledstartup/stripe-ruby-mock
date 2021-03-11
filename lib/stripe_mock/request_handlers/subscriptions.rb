@@ -227,9 +227,7 @@ module StripeMock
         customer[:subscriptions][:data].reject! { |sub| sub[:id] == subscription[:id] }
         customer[:subscriptions][:data] << subscription
 
-        if params[:status]
-          subscription[:status] = params[:status]
-        end
+        subscription[:status] = params[:status] if params[:status]
 
         subscription
       end
