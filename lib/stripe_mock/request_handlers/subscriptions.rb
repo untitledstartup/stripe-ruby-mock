@@ -153,7 +153,7 @@ module StripeMock
           end
         end
 
-        if params[:trial_period_days]
+        if params[:trial_period_days] && params[:trial_period_days] > 0
           subscription[:status] = 'trialing'
         end
 
