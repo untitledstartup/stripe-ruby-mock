@@ -1448,9 +1448,9 @@ module StripeMock
         card: {
           brand: case last4&.to_s
           when /^4/, nil
-            'visa'
+            'Visa'
           when /^5[1-5]/
-            'mastercard'
+            'Mastercard'
           else
             'unknown'
           end,
