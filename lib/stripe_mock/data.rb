@@ -1465,7 +1465,7 @@ module StripeMock
           fingerprint: 'Hr3Ly5z5IYxsokWA',
           funding: 'credit',
           generated_from: nil,
-          last4: last4.nil? ? '3155' : last4.to_s[-4..],
+          last4: last4.nil? ? '9191' : last4.to_s[-4..],
           three_d_secure_usage: { supported: true },
           wallet: nil
         },
@@ -1511,6 +1511,7 @@ module StripeMock
           name: 'John Dolton',
           phone: nil
         },
+        created: 123456789,
         customer: params[:customer] || nil,
         metadata: {
           order_id: '123456789'
