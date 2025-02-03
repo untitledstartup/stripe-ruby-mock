@@ -265,7 +265,6 @@ module StripeMock
         description: nil,
         dispute: nil,
         payment_method: nil,
-        payment_method_details: nil,
         payment_intent: nil,
         metadata: {
         }
