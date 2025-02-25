@@ -260,7 +260,6 @@ module StripeMock
         description: nil,
         dispute: nil,
         payment_method: nil,
-        payment_method_details: nil,
         payment_intent: nil,
         metadata: {
         }
@@ -1370,6 +1369,7 @@ module StripeMock
 
       params = {
         id: source[:id],
+        type: "card",
         card: source, customer: source[:customer], metadata: source[:metadata],
         billing_details: {
           address: {city: source[:address_city], country: source[:country], line1: source[:address_line1], line2: source[:address_line2], postal_code: source[:address_zip], state: source[:address_state]},
@@ -1436,9 +1436,9 @@ module StripeMock
         card: {
           brand: case last4&.to_s
           when /^4/, nil
-            'visa'
+            'Visa'
           when /^5[1-5]/
-            'mastercard'
+            'Mastercard'
           else
             'unknown'
           end,
@@ -1453,7 +1453,7 @@ module StripeMock
           fingerprint: 'Hr3Ly5z5IYxsokWA',
           funding: 'credit',
           generated_from: nil,
-          last4: last4.nil? ? '3155' : last4.to_s[-4..],
+          last4: last4.nil? ? '9191' : last4.to_s[-4..],
           three_d_secure_usage: { supported: true },
           wallet: nil
         },
@@ -1489,6 +1489,7 @@ module StripeMock
           name: 'John Dolton',
           phone: nil
         },
+        created: 123456789,
         customer: params[:customer] || nil,
         metadata: {
           order_id: '123456789'
