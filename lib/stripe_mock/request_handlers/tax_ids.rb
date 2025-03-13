@@ -18,7 +18,7 @@ module StripeMock
         tax_ids[ params[:id] ]
       end
       def new_customer_tax_id(route, method_url, params, headers)
-        new_tax_id(route, method_url, params.merge(customer: $1))
+        new_tax_id(route, method_url, params.merge(customer: $1), headers)
       end
 
       def get_tax_id(route, method_url, params, headers)
