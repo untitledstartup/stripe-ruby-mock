@@ -55,7 +55,7 @@ module StripeMock
         stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         customer = assert_existence :customer, $1, customers[stripe_account][$1]
 
-        Data.mock_list_object(customer[:tax_ids][:data], params)
+        Data.mock_list_object(customer.dig(:tax_ids, :data) || [], params)
       end
 
       def delete_tax_id(route, method_url, params, headers)
