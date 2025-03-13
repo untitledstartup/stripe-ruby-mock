@@ -18,7 +18,14 @@ module StripeMock
         tax_ids[ params[:id] ]
       end
       def new_customer_tax_id(route, method_url, params, headers)
-        new_tax_id(route, method_url, params.merge(customer: $1), headers)
+        route =~ method_url
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
+        customer = assert_existence :customer, $1, customers[stripe_account][$1]
+        tax_id = new_tax_id(route, method_url, params.merge(customer: $1), headers)
+        # Save the tax id on the customer
+        customer[:tax_ids][:data].unshift tax_id
+
+        tax_id
       end
 
       def get_tax_id(route, method_url, params, headers)
@@ -26,9 +33,14 @@ module StripeMock
         tax_id = assert_existence :tax_id, $1, tax_ids[$1]
         tax_id.clone
       end
+
       def get_customer_tax_id(route, method_url, params, headers)
         route =~ method_url
-        tax_id = tax_ids[$2]
+
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
+        customer = assert_existence :customer, $1, customers[stripe_account][$1]
+
+        tax_id =  customer[:tax_ids][:data].find{|tax| tax[:id] == $2 }
         tax_id = nil if tax_id[:customer] != $1
         tax_id = assert_existence :tax_id, $2, tax_id
         tax_id.clone
@@ -38,7 +50,12 @@ module StripeMock
         Data.mock_list_object(tax_ids.values, params)
       end
       def list_customer_tax_ids(route, method_url, params, headers)
-        Data.mock_list_object(tax_ids.values.select { |t| t[:customer] == $1 }, params)
+        route =~ method_url
+
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
+        customer = assert_existence :customer, $1, customers[stripe_account][$1]
+
+        Data.mock_list_object(customer[:tax_ids][:data], params)
       end
 
       def delete_tax_id(route, method_url, params, headers)
@@ -52,6 +69,10 @@ module StripeMock
       end
       def delete_customer_tax_id(route, method_url, params, headers)
         route =~ method_url
+
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
+        customer = assert_existence :customer, $1, customers[stripe_account][$1]
+
         tax_id = tax_ids[$2]
         tax_id = nil if tax_id[:customer] != $1
         tax_id = assert_existence :tax_id, $2, tax_id
@@ -60,6 +81,10 @@ module StripeMock
           id: tax_ids[$2][:id],
           deleted: true
         }
+
+        customer[:tax_ids][:data].reject! do |tax|
+          tax[:id] == tax_id[:id]
+        end
       end
     end
   end
