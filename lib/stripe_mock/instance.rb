@@ -53,14 +53,16 @@ module StripeMock
     include StripeMock::RequestHandlers::CountrySpec
     include StripeMock::RequestHandlers::Payouts
     include StripeMock::RequestHandlers::EphemeralKey
+    include StripeMock::RequestHandlers::TaxIds
     include StripeMock::RequestHandlers::TaxRates
     include StripeMock::RequestHandlers::Checkout
     include StripeMock::RequestHandlers::Checkout::Session
 
     attr_reader :accounts, :balance, :balance_transactions, :bank_tokens, :charges, :coupons, :customers,
                 :disputes, :events, :invoices, :invoice_items, :orders, :payment_intents, :payment_methods,
-                :setup_intents, :plans, :prices, :promotion_codes, :recipients, :refunds, :transfers, :payouts, :subscriptions, :country_spec,
-                :subscriptions_items, :products, :skus, :tax_rates, :checkout_sessions, :checkout_session_line_items
+                :setup_intents, :plans, :prices, :promotion_codes, :recipients, :refunds, :transfers, :payouts, 
+                :subscriptions, :country_spec, :subscriptions_items, :products, :skus, :tax_ids, :tax_rates, :checkout_sessions, 
+                :checkout_session_line_items
 
     attr_accessor :error_queue, :debug, :conversion_rate, :account_balance
 
@@ -94,6 +96,7 @@ module StripeMock
       @subscriptions = {}
       @subscriptions_items = {}
       @country_spec = {}
+      @tax_ids = {}
       @tax_rates = {}
       @checkout_sessions = {}
       @checkout_session_line_items = {}
