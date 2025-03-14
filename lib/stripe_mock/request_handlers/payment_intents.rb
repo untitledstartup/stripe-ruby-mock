@@ -1,7 +1,7 @@
 module StripeMock
   module RequestHandlers
     module PaymentIntents
-      ALLOWED_PARAMS = [:description, :metadata, :receipt_email, :shipping, :destination, :payment_method, :payment_method_types, :setup_future_usage, :transfer_data, :amount, :currency]
+      ALLOWED_PARAMS = [:description, :metadata, :receipt_email, :shipping, :destination, :payment_method, :payment_method_types, :setup_future_usage, :transfer_data, :amount, :currency, :payment_method_data]
 
       def PaymentIntents.included(klass)
         klass.add_handler 'post /v1/payment_intents',               :new_payment_intent
@@ -19,6 +19,11 @@ module StripeMock
         secret = new_id('secret')
 
         ensure_payment_intent_required_params(params)
+
+        if params[:payment_method_data]
+          payment_method = new_payment_method(nil, nil, params[:payment_method_data], headers)
+          params[:payment_method] = payment_method[:id]
+        end
 
         payment_intents[id] = Data.mock_payment_intent(
           params.merge(
