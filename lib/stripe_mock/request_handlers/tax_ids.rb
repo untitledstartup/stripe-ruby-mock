@@ -50,6 +50,7 @@ module StripeMock
         Data.mock_list_object(tax_ids.values, params)
       end
       def list_customer_tax_ids(route, method_url, params, headers)
+        route =~ method_url
         Data.mock_list_object(tax_ids.values.select { |t| t[:customer] == $1 }, params)
       end
 
