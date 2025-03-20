@@ -35,6 +35,7 @@ module StripeMock
     include StripeMock::RequestHandlers::Subscriptions # must be before Customers
     include StripeMock::RequestHandlers::SubscriptionItems
     include StripeMock::RequestHandlers::Customers
+    include StripeMock::RequestHandlers::CustomerSessions
     include StripeMock::RequestHandlers::Coupons
     include StripeMock::RequestHandlers::Disputes
     include StripeMock::RequestHandlers::Events
@@ -58,7 +59,7 @@ module StripeMock
     include StripeMock::RequestHandlers::Checkout
     include StripeMock::RequestHandlers::Checkout::Session
 
-    attr_reader :accounts, :balance, :balance_transactions, :bank_tokens, :charges, :coupons, :customers,
+    attr_reader :accounts, :balance, :balance_transactions, :bank_tokens, :charges, :coupons, :customers, :customer_sessions,
                 :disputes, :events, :invoices, :invoice_items, :orders, :payment_intents, :payment_methods,
                 :setup_intents, :plans, :prices, :promotion_codes, :recipients, :refunds, :transfers, :payouts, 
                 :subscriptions, :country_spec, :subscriptions_items, :products, :skus, :tax_ids, :tax_rates, :checkout_sessions, 
@@ -74,6 +75,7 @@ module StripeMock
       @ach_credit_transfer_tokens = {}
       @card_tokens = {}
       @customers = { Stripe.api_key => {} }
+      @customer_sessions = {}
       @charges = {}
       @payment_intents = {}
       @payment_methods = {}

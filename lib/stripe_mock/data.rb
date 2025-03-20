@@ -202,6 +202,26 @@ module StripeMock
       }.merge(params)
     end
 
+    def self.mock_customer_session(params)
+      session_id = params[:id] || "test_cus_ses_default"
+      {
+        id: session_id,
+        object: 'customer_session',
+        client_secret: '_POpxYpmkXdtttYtZQYhrsOJZ2RCQ9kCqqXRU6qrP5c4Jgje',
+        components: {
+          buy_button: {
+            enabled: false
+          },
+          pricing_table: {
+            enabled: true
+          },
+        },
+        customer: params[:customer_id],
+        expires_at: 1684790027,
+        livemode: false
+      }.merge(params)
+    end
+
     def self.mock_charge(params={})
       charge_id = params[:id] || "ch_1fD6uiR9FAA2zc"
       currency = params[:currency] || StripeMock.default_currency
