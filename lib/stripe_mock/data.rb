@@ -170,22 +170,22 @@ module StripeMock
         payment_method_preview: {
           billing_details: {
             address: {
-              city: null,
-              country: null,
-              line1: null,
-              line2: null,
-              postal_code: null,
-              state: null
+              city: nil,
+              country: nil,
+              line1: nil,
+              line2: nil,
+              postal_code: nil,
+              state: nil
             },
-            email: null,
-            name: null,
-            phone: null
+            email: nil,
+            name: nil,
+            phone: nil
           },
           card: {
             brand: 'visa',
             checks: {
-              address_line1_check: null,
-              address_postal_code_check: null,
+              address_line1_check: nil,
+              address_postal_code_check: nil,
               cvc_check: 'unchecked'
             },
             country: 'US',
@@ -194,18 +194,18 @@ module StripeMock
             exp_year: 2025,
             fingerprint: 'jbGyCKrSRsFpOBWP',
             funding: 'credit',
-            generated_from: null,
+            generated_from: nil,
             last4: '4242',
             networks: {
               available: [
                 'visa'
               ],
-              preferred: null
+              preferred: nil
             },
             three_d_secure_usage: {
               'supported': true
             },
-            wallet: null
+            wallet: nil
           },
           type: 'card'
         },
