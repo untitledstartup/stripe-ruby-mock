@@ -136,8 +136,10 @@ module StripeMock
             if payment_intent[:invoice] && !invoices[payment_intent[:invoice]].nil?
               invoices[payment_intent[:invoice]].merge!(paid: true, status: 'paid') 
               invoice = invoices[payment_intent[:invoice]]
-              # Update subscription to active
-              subscriptions[invoice[:subscription]].merge!(status: 'active') if invoice[:subscription] && subscriptions[invoice[:subscription]].present?
+              # Update subscription to active if it is incomplete
+              if invoice[:subscription] && subscriptions[invoice[:subscription]].present? && subscriptions[invoice[:subscription]][:status] == 'incomplete'
+                subscriptions[invoice[:subscription]].merge!(status: 'active') 
+              end
             end
 
           else
