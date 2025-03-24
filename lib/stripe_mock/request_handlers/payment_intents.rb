@@ -133,7 +133,13 @@ module StripeMock
             payment_intent[:charges][:data] << charge
             payment_intent[:status] = 'succeeded'
             payment_intent[:latest_charge] = charge[:id]
-            invoices[payment_intent[:invoice]].merge!(paid: true, status: 'paid') if payment_intent[:invoice] && !invoices[payment_intent[:invoice]].nil?
+            if payment_intent[:invoice] && !invoices[payment_intent[:invoice]].nil?
+              invoices[payment_intent[:invoice]].merge!(paid: true, status: 'paid') 
+              invoice = invoices[payment_intent[:invoice]]
+              # Update subscription to active
+              subscriptions[invoice[:subscription]].merge!(status: 'active') if invoice[:subscription] && subscriptions[invoice[:subscription]].present?
+            end
+
           else
             payment_intent[:status] = 'requires_action' # check status for not enought founds
           end
