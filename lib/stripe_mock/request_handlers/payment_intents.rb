@@ -90,6 +90,12 @@ module StripeMock
         route =~ method_url
         payment_intent = assert_existence :payment_intent, $1, payment_intents[$1]
 
+        # When confirmation token is provided, use the payment method from the token
+        if params[:confirmation_token]
+          confirmation_token = confirmation_tokens[params[:confirmation_token]]
+          params[:payment_method] = confirmation_token[:payment_method]
+        end
+
         if params[:payment_method]
           payment_intent[:payment_method] = params[:payment_method]
           payment_intent[:status] = 'requires_confirmation'
