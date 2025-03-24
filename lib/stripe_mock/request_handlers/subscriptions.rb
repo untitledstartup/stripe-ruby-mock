@@ -196,8 +196,9 @@ module StripeMock
         invoices[invoice[:id]] = invoice
 
         # add payment intent
-        if params[:source].nil? && subscription_plans.first[:amount] > 0 && customer[:invoice_settings] && customer[:invoice_settings][:default_payment_method] # Check how free plan behave on stripe live
-          payment_intent = subscription_payment_intent(invoice)
+        if params[:source].nil? && subscription_plans.first[:amount] > 0
+          confirm = customer[:invoice_settings] && customer[:invoice_settings][:default_payment_method] ? true : false
+          payment_intent = subscription_payment_intent(invoice, confirm: confirm)
           invoice[:payment_intent] = payment_intent[:id]
           invoice[:paid] = payment_intent[:status] == 'succeeded'
           invoice[:status] = 'paid' if payment_intent[:status] == 'succeeded'
@@ -425,8 +426,8 @@ module StripeMock
         raise Stripe::InvalidRequestError.new('This customer has no attached payment source', nil, http_status: 400)
       end
 
-      def subscription_payment_intent(invoice)
-        new_payment_intent(nil, nil, { payment_method: customers[Stripe.api_key][invoice[:customer]][:invoice_settings][:default_payment_method], customer: invoice[:customer], amount: invoice[:amount_due], currency: invoice[:currency], invoice: invoice[:id], confirm: true }, nil)
+      def subscription_payment_intent(invoice, confirm: true)
+        new_payment_intent(nil, nil, { payment_method: customers[Stripe.api_key][invoice[:customer]][:invoice_settings][:default_payment_method], customer: invoice[:customer], amount: invoice[:amount_due], currency: invoice[:currency], invoice: invoice[:id], confirm: confirm }, nil)
       end
 
       def verify_active_status(subscription)
