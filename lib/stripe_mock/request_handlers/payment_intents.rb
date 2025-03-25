@@ -28,6 +28,12 @@ module StripeMock
         # When confirmation token is provided, use the payment method from the token
         if params[:confirmation_token]
           confirmation_token = confirmation_tokens[params[:confirmation_token]]
+
+          # If confirmation is not found, create a new one. This may happen if the tests are running real stripe on the UI but Stripe-ruby-mock on the backend.
+          if confirmation_token.nil?
+            confirmation_token = create_default_confirmation_token(route, method_url, params, headers)
+          end
+
           params[:payment_method] = confirmation_token[:payment_method]
         end
 
