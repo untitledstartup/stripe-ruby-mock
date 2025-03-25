@@ -25,6 +25,12 @@ module StripeMock
           params[:payment_method] = payment_method[:id]
         end
 
+        # When confirmation token is provided, use the payment method from the token
+        if params[:confirmation_token]
+          confirmation_token = confirmation_tokens[params[:confirmation_token]]
+          params[:payment_method] = confirmation_token[:payment_method]
+        end
+
         payment_intents[id] = Data.mock_payment_intent(
           params.merge(
             id: id,
