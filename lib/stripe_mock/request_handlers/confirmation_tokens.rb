@@ -9,6 +9,20 @@ module StripeMock
       def retrieve_confirmation_token(route, method_url, params, headers)
         route =~ method_url
 
+        # If confirmation is not found, create a new one. This may happen if the tests are running real stripe on the UI but Stripe-ruby-mock on the backend.
+        if confirmation_tokens[$1].nil?
+          params[:id] = $1
+          card_token_id = StripeMock.generate_card_token(last4: "9191", exp_year: Time.now.year.next, exp_month: 4, brand: 'Visa')
+          params[:payment_method_data] = {
+            type: 'card',
+            card: {
+              token: card_token_id
+            },
+            setup_future_usage: 'off_session'
+          }
+          return new_confirmation_token(route, method_url, params, headers)
+        end
+
         assert_existence :confirmation_token, $1, confirmation_tokens[$1]
       end
 
