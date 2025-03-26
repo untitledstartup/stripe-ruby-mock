@@ -25,7 +25,7 @@ module StripeMock
         # If confirmation is not found, create a new one. This may happen if the tests are running real stripe on the UI but Stripe-ruby-mock on the backend.
         if confirmation_tokens[$1].nil?
           params[:id] = $1
-          confirmation_tokens[$1] = create_default_confirmation_token(params)
+          confirmation_tokens[$1] = create_default_confirmation_token(route, method_url, params, headers)
         end
 
         assert_existence :confirmation_token, $1, confirmation_tokens[$1]
