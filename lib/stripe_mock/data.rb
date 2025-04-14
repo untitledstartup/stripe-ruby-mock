@@ -562,31 +562,31 @@ module StripeMock
       StripeMock::Util.rmerge({
         id: 'sub_sched_1Mr3YdLkdIwHu7ixjop3qtff',
         object: 'subscription_schedule',
-        application: null,
-        canceled_at: null,
-        completed_at: null,
+        application: nil,
+        canceled_at: nil,
+        completed_at: nil,
         created: 1724058651,
-        current_phase: null,
+        current_phase: nil,
         customer: 'c_test_id',
         default_settings: {
-          application_fee_percent: null,
+          application_fee_percent: nil,
           automatic_tax: {
             enabled: false,
-            liability: null
+            liability: nil
           },
           billing_cycle_anchor: 'automatic',
-          billing_thresholds: null,
+          billing_thresholds: nil,
           collection_method: 'charge_automatically',
-          default_payment_method: null,
-          default_source: null,
-          description: null,
+          default_payment_method: nil,
+          default_source: nil,
+          description: nil,
           invoice_settings: {
             issuer: {
               type: 'self'
             }
           },
-          on_behalf_of: null,
-          transfer_data: null
+          on_behalf_of: nil,
+          transfer_data: nil
         },
         end_behavior: 'release',
         livemode: false,
@@ -594,22 +594,22 @@ module StripeMock
         phases: [
           {
             add_invoice_items: [],
-            application_fee_percent: null,
-            billing_cycle_anchor: null,
-            billing_thresholds: null,
-            collection_method: null,
-            coupon: null,
+            application_fee_percent: nil,
+            billing_cycle_anchor: nil,
+            billing_thresholds: nil,
+            collection_method: nil,
+            coupon: nil,
             currency: 'usd',
-            default_payment_method: null,
+            default_payment_method: nil,
             default_tax_rates: [],
-            description: null,
-            discounts: null,
+            description: nil,
+            discounts: nil,
             end_date: 1818666418,
-            invoice_settings: null,
+            invoice_settings: nil,
             items: [
               {
-                billing_thresholds: null,
-                discounts: null,
+                billing_thresholds: nil,
+                discounts: nil,
                 metadata: {},
                 plan: 'p_test_id',
                 quantity: 1,
@@ -617,19 +617,19 @@ module StripeMock
               }
             ],
             metadata: {},
-            on_behalf_of: null,
+            on_behalf_of: nil,
             proration_behavior: 'create_prorations',
             start_date: 1787130418,
-            transfer_data: null,
-            trial_end: null
+            transfer_data: nil,
+            trial_end: nil
           }
         ],
-        released_at: null,
-        released_subscription: null,
-        renewal_interval: null,
+        released_at: nil,
+        released_subscription: nil,
+        renewal_interval: nil,
         status: 'active',
-        subscription: null,
-        test_clock: null
+        subscription: nil,
+        test_clock: nil
       }, params)
     end
 
