@@ -553,7 +553,8 @@ module StripeMock
         application_fee_percent: nil,
         cancel_at: nil,
         end_at: nil,
-        pause_collection: nil
+        pause_collection: nil,
+        schedule: nil
       }, params)
     end
 
