@@ -15,7 +15,8 @@ module StripeMock
           subscription = Data.mock_subscription({ id: (params[:id] || new_id('su')) })
         end
 
-        customer = params[:customer]
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
+        customer = params[:customer] || subscription[:customer]
         customer_id = customer.is_a?(Stripe::Customer) ? customer[:id] : customer.to_s
         customer = assert_existence :customer, customer_id, customers[stripe_account][customer_id]
 
