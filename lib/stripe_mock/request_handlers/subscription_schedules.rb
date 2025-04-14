@@ -4,6 +4,7 @@ module StripeMock
       def SubscriptionSchedules.included(klass)
         klass.add_handler 'get /v1/subscription_schedules/(.*)', :retrieve_subscription_schedule
         klass.add_handler 'post /v1/subscription_schedules', :new_subscription_schedule
+        klass.add_handler 'post /v1/subscription_schedules/([^/]*)', :update_subscription_schedule
       end
 
       def new_subscription_schedule(route, method_url, params, headers)
@@ -32,6 +33,16 @@ module StripeMock
         add_subscription_to_customer(customer, subscription)
 
         subscription_schedules[params[:id]]
+      end
+
+      def update_subscription_schedule(route, method_url, params, headers)
+        route =~ method_url
+
+        assert_existence :subscription_schedule, $1, subscription_schedules[$1]
+
+        subscription_schedules[$1] = subscription_schedules[$1].merge(params)
+
+        subscription_schedules[$1]
       end
 
       def retrieve_subscription_schedule(route, method_url, params, headers)
