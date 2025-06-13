@@ -21,7 +21,9 @@ module StripeMock
         customer_id = customer.is_a?(Stripe::Customer) ? customer[:id] : customer.to_s
         customer = assert_existence :customer, customer_id, customers[stripe_account][customer_id]
 
-        subscription_schedules[params[:id]] = Data.mock_subscription_schedule(params)
+        schedule = Data.mock_subscription_schedule(params)
+        schedule[:subscription] = subscription[:id]
+        subscription_schedules[params[:id]] = schedule
         # Set schedule id on subscription
         subscription[:schedule] = params[:id]
 
